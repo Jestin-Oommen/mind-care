@@ -1,4 +1,5 @@
 "use client";
+
 import { getMoods, getSessions } from "@/lib/storage";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -9,7 +10,6 @@ import {
   Trophy,
   Bell,
   Sparkles,
-  MessageSquare,
   ArrowRight,
 } from "lucide-react";
 
@@ -26,10 +26,10 @@ import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
 
-  const [stats, setStats] = useState([]);
-  const [insights, setInsights] = useState([]);
+  const [mounted, setMounted] = useState(false);
+  const [stats, setStats] = useState<any[]>([]);
+  const [insights, setInsights] = useState<any[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -37,7 +37,7 @@ export default function Dashboard() {
     const moods = getMoods();
     const sessions = getSessions();
 
-    // 📊 Calculate Mood Average
+    // 🔢 Average Mood
     const avgMood =
       moods.length > 0
         ? Math.round(
@@ -45,7 +45,7 @@ export default function Dashboard() {
           )
         : 0;
 
-    // 📊 Stats (REAL DATA)
+    // 📊 Stats
     setStats([
       {
         title: "Mood Score",
@@ -81,8 +81,8 @@ export default function Dashboard() {
       },
     ]);
 
-    // 🧠 INSIGHTS LOGIC
-    const newInsights = [];
+    // 🧠 Insights Logic
+    const newInsights: any[] = [];
 
     if (moods.length > 0) {
       const latest = moods[moods.length - 1].value;
@@ -91,13 +91,13 @@ export default function Dashboard() {
         newInsights.push({
           title: "Mood Improving 📈",
           description:
-            "Your recent mood is better than your overall average.",
+            "Your recent mood is better than your average.",
         });
       } else {
         newInsights.push({
           title: "Mood Drop ⚠️",
           description:
-            "Your mood dropped slightly. Consider relaxation exercises.",
+            "Your mood has slightly dropped. Try relaxation exercises.",
         });
       }
 
@@ -105,7 +105,7 @@ export default function Dashboard() {
         newInsights.push({
           title: "Consistency 🔥",
           description:
-            "You're regularly tracking your mood. Keep it up!",
+            "You're regularly tracking your mood. Great habit!",
         });
       }
 
@@ -122,7 +122,7 @@ export default function Dashboard() {
       newInsights.push({
         title: "Therapy Progress 💬",
         description:
-          "You're actively engaging in therapy sessions. Great progress!",
+          "You're actively engaging in therapy sessions.",
       });
     }
 
@@ -136,7 +136,6 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* HEADER */}
-
         <div className="flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -156,11 +155,9 @@ export default function Dashboard() {
         </div>
 
         {/* TOP GRID */}
-
         <div className="grid md:grid-cols-3 gap-4">
 
           {/* QUICK ACTIONS */}
-
           <Card className="relative overflow-hidden border-primary/10">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
 
@@ -186,7 +183,6 @@ export default function Dashboard() {
           </Card>
 
           {/* OVERVIEW */}
-
           <Card className="col-span-2">
             <CardHeader>
               <CardTitle>Today's Overview</CardTitle>
@@ -218,7 +214,6 @@ export default function Dashboard() {
         </div>
 
         {/* INSIGHTS */}
-
         <Card>
           <CardHeader>
             <CardTitle>Insights</CardTitle>
@@ -241,8 +236,8 @@ export default function Dashboard() {
                 </div>
               ))
             ) : (
-              <p className="text-muted-foreground text-sm">
-                No insights yet. Start using the app to see analytics.
+              <p className="text-sm text-muted-foreground">
+                No insights yet. Start using the app.
               </p>
             )}
           </CardContent>
