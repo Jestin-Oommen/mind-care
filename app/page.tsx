@@ -1,5 +1,5 @@
 "use client";
-
+import { saveMood } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import {
@@ -99,7 +99,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
-
+      
       {/* HERO SECTION */}
 
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 text-center">
@@ -159,13 +159,17 @@ export default function Home() {
           </div>
 
           <Button
-            size="lg"
-            onClick={() => setShowDialog(true)}
-            className="rounded-full px-8"
-          >
-            Begin Your Journey
-            <ArrowRight className="ml-2 w-4 h-4"/>
-          </Button>
+  size="lg"
+  onClick={() => {
+    saveMood(emotion);   // ✅ SAVE MOOD HERE
+    setShowDialog(true); // open dialog
+  }}
+  className="rounded-full px-8"
+>
+  Begin Your Journey
+  <ArrowRight className="ml-2 w-4 h-4"/>
+</Button>
+            
 
         </motion.div>
       </section>
