@@ -1,6 +1,6 @@
 "use client";
 
-import { getMoods, getSessions } from "@/lib/storage";
+import { AnxietyGames } from "@/components/games/anxiety-games";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -31,11 +31,10 @@ export default function Dashboard() {
   const [stats, setStats] = useState<any[]>([]);
   const [insights, setInsights] = useState<any[]>([]);
 
-  useEffect(() => {
-    setMounted(true);
-
-    const moods = getMoods();
-    const sessions = getSessions();
+  // ✅ NEW FUNCTION (fetch from DB)
+  async function fetchData() {
+    const res = await fetch("/api/dashboard");
+    const { moods, sessions } = await res.json();
 
     // 🔢 Average Mood
     const avgMood =
@@ -81,7 +80,7 @@ export default function Dashboard() {
       },
     ]);
 
-    // 🧠 Insights Logic
+    // 🧠 Insights (YOUR ORIGINAL LOGIC)
     const newInsights: any[] = [];
 
     if (moods.length > 0) {
@@ -127,6 +126,11 @@ export default function Dashboard() {
     }
 
     setInsights(newInsights);
+  }
+
+  useEffect(() => {
+    setMounted(true);
+    fetchData(); // ✅ load data from DB
   }, []);
 
   if (!mounted) return null;
@@ -159,28 +163,28 @@ export default function Dashboard() {
 
           {/* QUICK ACTIONS */}
           <Card className="relative overflow-hidden border-primary/10">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent" />
+  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
 
-            <CardContent className="p-6 space-y-4">
-              <div className="flex items-center gap-3">
-                <Sparkles className="w-6 h-6 text-primary" />
-                <div>
-                  <h3 className="font-semibold">Quick Actions</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Start your session
-                  </p>
-                </div>
-              </div>
+  <CardContent className="p-6 space-y-4">
+    <div className="flex items-center gap-3">
+      <Sparkles className="w-6 h-6 text-primary" />
+      <div>
+        <h3 className="font-semibold">Quick Actions</h3>
+        <p className="text-sm text-muted-foreground">
+          Start your session
+        </p>
+      </div>
+    </div>
 
-              <Button
-                className="w-full justify-between bg-primary text-white"
-                onClick={() => router.push("/chat")}
-              >
-                Start Therapy
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </CardContent>
-          </Card>
+    <Button
+      className="w-full justify-between bg-primary text-white"
+      onClick={() => router.push("/chat")}
+    >
+      Start Therapy
+      <ArrowRight className="w-4 h-4" />
+    </Button>
+  </CardContent>
+</Card>
 
           {/* OVERVIEW */}
           <Card className="col-span-2">
@@ -242,6 +246,21 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+
+        {/* 🎮 GAMES SECTION (FIXED) */}
+        <AnxietyGames
+          onGamePlayed={async (gameName, description) => {
+            await fetch("/api/mood", {
+              method: "POST",
+              body: JSON.stringify({
+                value: 80,
+                label: gameName,
+              }),
+            });
+
+            fetchData(); // ✅ refresh dashboard
+          }}
+        />
 
       </div>
     </div>

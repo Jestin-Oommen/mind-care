@@ -3,10 +3,9 @@ import { getServerSession } from "next-auth";
 
 export async function GET() {
   const session = await getServerSession();
+  if (!session) return Response.json({ moods: [], sessions: [] });
 
-  if (!session) return Response.json([]);
-
-  // ✅ FIX: ensure user exists
+  // ensure user exists
   const user = await prisma.user.upsert({
     where: { email: session.user.email },
     update: {},
@@ -16,10 +15,19 @@ export async function GET() {
     },
   });
 
-  const sessions = await prisma.chatSession.findMany({
+  // get moods
+  const moods = await prisma.mood.findMany({
     where: { userId: user.id },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { createdAt: "asc" },
   });
 
-  return Response.json(sessions);
+  // get sessions
+  const sessions = await prisma.chatSession.findMany({
+    where: { userId: user.id },
+  });
+
+  return Response.json({
+    moods,
+    sessions,
+  });
 }

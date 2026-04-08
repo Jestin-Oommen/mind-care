@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 
-export async function GET() {
+export async function POST(req) {
   const session = await getServerSession();
+  if (!session) return Response.json({ error: "Unauthorized" });
 
-  if (!session) return Response.json([]);
-
-  // ✅ FIX: ensure user exists
+  // ensure user exists
   const user = await prisma.user.upsert({
     where: { email: session.user.email },
     update: {},
@@ -16,10 +15,15 @@ export async function GET() {
     },
   });
 
-  const sessions = await prisma.chatSession.findMany({
-    where: { userId: user.id },
-    orderBy: { updatedAt: "desc" },
+  const { value, label } = await req.json();
+
+  const mood = await prisma.mood.create({
+    data: {
+      userId: user.id,
+      value,
+      label,
+    },
   });
 
-  return Response.json(sessions);
+  return Response.json(mood);
 }

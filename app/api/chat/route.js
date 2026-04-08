@@ -1,38 +1,73 @@
 import { prisma } from "@/lib/prisma";
-import { askAI } from "@/lib/gemini";
+import { askAI } from "../../../lib/ai";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route"; // adjust path if needed
 
 export async function POST(req) {
   try {
+    // ✅ 1. Check auth
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return Response.json({ reply: "Unauthorized" });
+    }
+
+    // ✅ 2. Ensure user exists
+    const user = await prisma.user.upsert({
+      where: { email: session.user.email },
+      update: {},
+      create: {
+        email: session.user.email,
+        name: session.user.name,
+      },
+    });
+
     const { message, sessionId } = await req.json();
 
     if (!sessionId) {
       return Response.json({ reply: "Session ID missing" });
     }
 
-    // ✅ 1. Get previous messages from DB
+    // ✅ 3. Get previous messages
     const previousMessages = await prisma.message.findMany({
       where: { sessionId },
       orderBy: { createdAt: "asc" },
     });
 
-    // ✅ 2. Format history for Gemini
+    // ✅ 4. Format history
     const history = previousMessages.map((msg) => ({
       role: msg.role,
       text: msg.text,
     }));
 
-    // ✅ 3. Get AI response
-    const reply = await askAI(message, history);
+    // ✅ 5. Get AI response (with mood)
+    const ai = await askAI(message, history);
 
-    // ✅ 4. Save messages in DB
+    // ✅ 6. Save chat messages
     await prisma.message.createMany({
       data: [
         { sessionId, role: "user", text: message },
-        { sessionId, role: "assistant", text: reply },
+        { sessionId, role: "assistant", text: ai.reply },
       ],
     });
 
-    return Response.json({ reply });
+    // ✅ 7. Save mood
+    if (ai.mood) {
+      await prisma.mood.create({
+        data: {
+          userId: user.id,
+          value: ai.mood.value,
+          label: ai.mood.label,
+        },
+      });
+    }
+
+    // ✅ 8. Return response
+    return Response.json({
+      reply: ai.reply,
+      mood: ai.mood,
+    });
+
   } catch (error) {
     console.error(error);
     return Response.json({ reply: "Something went wrong." });

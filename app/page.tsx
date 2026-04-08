@@ -24,6 +24,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { Header } from "@/components/header";
 
 export default function Home() {
 
@@ -98,8 +99,9 @@ export default function Home() {
   ];
 
   return (
+    
     <div className="flex flex-col min-h-screen overflow-hidden">
-      
+      <Header/>
       {/* HERO SECTION */}
 
       <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 text-center">

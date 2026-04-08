@@ -9,10 +9,12 @@ datasource db {
 
 model ChatSession {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   messages  Message[]
+  user      User @relation(fields: [userId], references: [id])
 }
 
 model Message {
@@ -23,4 +25,23 @@ model Message {
   createdAt DateTime @default(now())
 
   session ChatSession @relation(fields: [sessionId], references: [id])
+}
+
+model User {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+  name  String?
+
+  sessions ChatSession[]
+  moods Mood[]
+}
+
+model Mood {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  value     Int
+  label     String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
