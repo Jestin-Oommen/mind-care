@@ -37,12 +37,16 @@ export default function Dashboard() {
     const { moods, sessions } = await res.json();
 
     // 🔢 Average Mood
-    const avgMood =
-      moods.length > 0
-        ? Math.round(
-            moods.reduce((acc, m) => acc + m.value, 0) / moods.length
-          )
-        : 0;
+    type Mood = {
+  value: number;
+};
+
+const avgMood =
+  moods.length > 0
+    ? Math.round(
+        moods.reduce((acc: number, m: Mood) => acc + m.value, 0) / moods.length
+      )
+    : 0;
 
     // 📊 Stats
     setStats([
