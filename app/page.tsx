@@ -52,7 +52,7 @@ export default function Home() {
 
   const welcomeSteps = [
     {
-      title: "Hi, I'm Aura 👋",
+      title: "Hi, I'm MindCare 👋",
       description:
         "Your AI companion for emotional well-being. I'm here to provide a safe space for you.",
       icon: Waves,
@@ -240,7 +240,7 @@ export default function Home() {
                 if (currentStep < welcomeSteps.length - 1) {
                   setCurrentStep(currentStep + 1);
                 } else {
-                  router.push("/chat");
+                  router.push("/dashboard");
                 }
 
               }}

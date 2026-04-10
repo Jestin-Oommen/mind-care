@@ -9,12 +9,12 @@ datasource db {
 
 model ChatSession {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  userId    String?   @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   messages  Message[]
-  user      User @relation(fields: [userId], references: [id])
+  user      User? @relation(fields: [userId], references: [id])
 }
 
 model Message {

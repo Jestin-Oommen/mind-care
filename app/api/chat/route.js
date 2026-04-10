@@ -8,25 +8,27 @@ export async function POST(req) {
     // ✅ 1. Check auth
     const session = await getServerSession(authOptions);
 
-    if (!session) {
-      return Response.json({ reply: "Unauthorized" });
-    }
+    
 
     // ✅ 2. Ensure user exists
-    const user = await prisma.user.upsert({
-      where: { email: session.user.email },
-      update: {},
-      create: {
-        email: session.user.email,
-        name: session.user.name,
-      },
-    });
+    
+
+          let user = null;
+
+          if (session) {
+            user = await prisma.user.upsert({
+              where: { email: session.user.email },
+              update: {},
+              create: {
+                email: session.user.email,
+                name: session.user.name,
+              },
+            });
+          }
 
     const { message, sessionId } = await req.json();
 
-    if (!sessionId) {
-      return Response.json({ reply: "Session ID missing" });
-    }
+    
 
     // ✅ 3. Get previous messages
     const previousMessages = await prisma.message.findMany({
@@ -52,7 +54,7 @@ export async function POST(req) {
     });
 
     // ✅ 7. Save mood
-    if (ai.mood) {
+    if (user && ai.mood) {
       await prisma.mood.create({
         data: {
           userId: user.id,

@@ -29,14 +29,21 @@ export default function Chat() {
 
   // create new session
   async function createSession() {
-    const res = await fetch("/api/session", { method: "POST" });
-    const data = await res.json();
+  const res = await fetch("/api/session", { method: "POST" });
+  const data = await res.json();
 
-    setSessionId(data.sessionId);
-    setMessages([]);
+  console.log("SESSION RESPONSE:", data); // 👈 ADD THIS LINE
 
-    fetchSessions(); // refresh sidebar
+  if (!data.sessionId) {
+    alert("Session creation failed");
+    return;
   }
+
+  setSessionId(data.sessionId);
+  setMessages([]);
+
+  fetchSessions();
+}
 
   // load messages
   async function loadMessages(id: string) {

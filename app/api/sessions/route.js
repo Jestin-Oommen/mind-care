@@ -4,9 +4,11 @@ import { getServerSession } from "next-auth";
 export async function GET() {
   const session = await getServerSession();
 
-  if (!session) return Response.json([]);
+  // ✅ Guest user → return empty (no crash)
+  if (!session) {
+    return Response.json([]);
+  }
 
-  // ✅ FIX: ensure user exists
   const user = await prisma.user.upsert({
     where: { email: session.user.email },
     update: {},
