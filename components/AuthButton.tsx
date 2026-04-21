@@ -1,6 +1,7 @@
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export default function AuthButton() {
@@ -8,15 +9,33 @@ export default function AuthButton() {
 
   if (session?.user) {
     return (
-      <Button variant="outline" onClick={() => signOut()}>
-        Logout ({session.user.name ?? "User"})
-      </Button>
+      <div className="flex items-center gap-3">
+
+        {/* Avatar */}
+        {session.user.image ? (
+          <img
+            src={session.user.image}
+            className="w-8 h-8 rounded-full"
+          />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+            {session.user.name?.[0] || "U"}
+          </div>
+        )}
+
+        {/* Name */}
+        <span>{session.user.name}</span>
+
+        <Button size="sm" onClick={() => signOut()}>
+          Logout
+        </Button>
+      </div>
     );
   }
 
   return (
-    <Button onClick={() => signIn("google")}>
-      Login
-    </Button>
+    <Link href="/login">
+      <Button size="sm">Login</Button>
+    </Link>
   );
 }
