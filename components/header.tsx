@@ -16,7 +16,7 @@ export function Header() {
 
   const navItems = [
     { href: "/features", label: "Features" },
-    { href: "/about", label: "About Aura" },
+    { href: "/about", label: "About MindCare" },
   ];
 
   return (
@@ -33,7 +33,7 @@ export function Header() {
 
             <div className="flex flex-col">
               <span className="font-semibold text-lg bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
-                Aura
+                MindCare
               </span>
 
               <span className="text-xs text-muted-foreground">
